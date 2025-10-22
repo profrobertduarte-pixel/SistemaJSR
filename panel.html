@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Sistema de Cobro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">💧 Junta San Ramón</div>
+    <h1>💳 Sistema de Cobro - Panel Principal</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">🚪 Cerrar sesión</a>
+  </nav>
+
+  <main>
+    <div class="card" onclick="abrirFormularioUsuario()">
+      <div class="icon pago">➕</div>
+      <h3>Crear Usuario</h3>
+      <p>Agregar un nuevo usuario al sistema.</p>
+    </div>
+
+    <div class="card" onclick="abrirFormularioPago()">
+      <div class="icon pago">💰</div>
+      <h3>Registrar Pago</h3>
+      <p>Accede al módulo para registrar pagos de usuarios.</p>
+    </div>
+
+    <div class="card" onclick="mostrarUsuarios()">
+      <div class="icon deuda">📋</div>
+      <h3>Consultar Usuarios</h3>
+      <p>Ver la lista de usuarios registrados.</p>
+    </div>
+
+    <div class="card" onclick="mostrarPagos()">
+      <div class="icon reporte">📊</div>
+      <h3>Consultar Pagos</h3>
+      <p>Ver los pagos registrados.</p>
+    </div>
+  </main>
+
+  <!-- Buscador Usuarios -->
+  <div style="padding:10px;">
+    <input type="text" id="buscarUsuario" placeholder="🔍 Buscar usuario por nombre o cédula" oninput="buscarUsuarios()">
+  </div>
+
+  <!-- Resumen -->
+  <div id="resumenPagos" style="padding:10px;">
+    <h3>💵 Total recaudado: $<span id="totalRecaudado">0</span></h3>
+  </div>
+
+  <!-- Formulario Crear Usuario -->
+  <div id="formularioUsuario" class="modal" style="display:none; padding:20px;">
+    <h2>Crear Usuario</h2>
+    <input type="text" id="nombres" placeholder="Nombres y Apellidos">
+    <input type="text" id="cedula" placeholder="Cédula de Identidad">
+    <input type="text" id="barrio" placeholder="Barrio">
+    <input type="text" id="casa" placeholder="Nº de casa">
+    <input type="text" id="manzana" placeholder="Manzana">
+    <input type="text" id="lote" placeholder="Lote">
+    <input type="number" id="anio" placeholder="Año de ingreso">
+    <button onclick="guardarUsuario()">Guardar Usuario</button>
+    <button onclick="cerrarFormularioUsuario()">Cerrar</button>
+  </div>
+
+  <!-- Formulario Editar Usuario -->
+  <div id="formularioEditarUsuario" class="modal" style="display:none; padding:20px;">
+    <h2>Editar Usuario</h2>
+    <input type="text" id="editarNombres" placeholder="Nombres y Apellidos">
+    <input type="text" id="editarCedula" placeholder="Cédula de Identidad" disabled>
+    <input type="text" id="editarBarrio" placeholder="Barrio">
+    <input type="text" id="editarCasa" placeholder="Nº de casa">
+    <input type="text" id="editarManzana" placeholder="Manzana">
+    <input type="text" id="editarLote" placeholder="Lote">
+    <input type="number" id="editarAnio" placeholder="Año de ingreso">
+    <button onclick="guardarEdicionUsuario()">Guardar Cambios</button>
+    <button onclick="cerrarFormularioEditarUsuario()">Cerrar</button>
+  </div>
+
+  <!-- Formulario Registrar Pago -->
+  <div id="formularioPago" class="modal" style="display:none; padding:20px;">
+    <h2>Registrar Pago</h2>
+    <input type="text" id="pagoCedula" placeholder="Cédula de Usuario">
+    <input type="number" id="monto" placeholder="Monto">
+    <button onclick="guardarPago()">Guardar Pago</button>
+    <button onclick="cerrarFormularioPago()">Cerrar</button>
+  </div>
+
+  <!-- Lista Usuarios -->
+  <div id="listaUsuarios" style="display:none; padding:20px;">
+    <h2>Lista de Usuarios</h2>
+    <div id="usuarios"></div>
+    <button onclick="cerrarListaUsuarios()">Cerrar</button>
+  </div>
+
+  <!-- Lista Pagos -->
+  <div id="listaPagos" style="display:none; padding:20px;">
+    <h2>Lista de Pagos</h2>
+    <div id="pagos"></div>
+    <button onclick="cerrarListaPagos()">Cerrar</button>
+  </div>
+
+<script>
+let cedulaEditar = "";
+
+function abrirFormularioUsuario(){ document.getElementById("formularioUsuario").style.display = "block"; }
+function cerrarFormularioUsuario(){ document.getElementById("formularioUsuario").style.display = "none"; }
+
+function guardarUsuario(){
+    let nombres = document.getElementById("nombres").value;
+    let cedula = document.getElementById("cedula").value;
+    let barrio = document.getElementById("barrio").value;
+    let casa = document.getElementById("casa").value;
+    let manzana = document.getElementById("manzana").value;
+    let lote = document.getElementById("lote").value;
+    let anio = document.getElementById("anio").value;
+    if(!nombres || !cedula || !barrio || !casa || !manzana || !lote || !anio){ alert("Complete todos los campos"); return; }
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    usuarios.push({ nombres, cedula, barrio, casa, manzana, lote, anio });
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+    alert("✅ Usuario guardado correctamente");
+    cerrarFormularioUsuario();
+}
+
+function abrirFormularioPago(){ document.getElementById("formularioPago").style.display = "block"; }
+function cerrarFormularioPago(){ document.getElementById("formularioPago").style.display = "none"; }
+
+function guardarPago(){
+    let cedula = document.getElementById("pagoCedula").value;
+    let monto = document.getElementById("monto").value;
+    if(!cedula || !monto){ alert("Complete los campos"); return; }
+    let pagos = JSON.parse(localStorage.getItem("pagos")) || [];
+    pagos.push({ cedula, monto, fecha: new Date().toLocaleString() });
+    localStorage.setItem("pagos", JSON.stringify(pagos));
+    alert("✅ Pago registrado correctamente");
+    cerrarFormularioPago();
+    actualizarResumenPagos();
+}
+
+function mostrarUsuarios(){
+    document.getElementById("listaUsuarios").style.display = "block";
+    let usuariosDiv = document.getElementById("usuarios");
+    usuariosDiv.innerHTML = "";
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    usuarios.forEach(u => {
+        usuariosDiv.innerHTML += `<p>${u.nombres} | ${u.cedula} | ${u.barrio} | Casa: ${u.casa} | Manzana: ${u.manzana} | Lote: ${u.lote} | Año: ${u.anio} 
+<button onclick="abrirFormularioEditarUsuario('${u.cedula}')">✏️ Editar</button>
+<button onclick="eliminarUsuario('${u.cedula}')">❌ Eliminar</button></p>`;
+    });
+}
+
+function cerrarListaUsuarios(){ document.getElementById("listaUsuarios").style.display = "none"; }
+
+function mostrarPagos(){
+    document.getElementById("listaPagos").style.display = "block";
+    let pagosDiv = document.getElementById("pagos");
+    pagosDiv.innerHTML = "";
+    let pagos = JSON.parse(localStorage.getItem("pagos")) || [];
+    pagos.forEach(p => { pagosDiv.innerHTML += `<p>Cédula: ${p.cedula} | Monto: $${p.monto} | Fecha: ${p.fecha}</p>`; });
+    actualizarResumenPagos();
+}
+
+function cerrarListaPagos(){ document.getElementById("listaPagos").style.display = "none"; }
+
+function eliminarUsuario(cedula){
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    usuarios = usuarios.filter(u => u.cedula !== cedula);
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+    mostrarUsuarios();
+}
+
+function buscarUsuarios(){
+    let query = document.getElementById("buscarUsuario").value.toLowerCase();
+    let usuariosDiv = document.getElementById("usuarios");
+    usuariosDiv.innerHTML = "";
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    usuarios.filter(u => u.nombres.toLowerCase().includes(query) || u.cedula.includes(query))
+        .forEach(u => {
+            usuariosDiv.innerHTML += `<p>${u.nombres} | ${u.cedula} | ${u.barrio} | Casa: ${u.casa} | Manzana: ${u.manzana} | Lote: ${u.lote} | Año: ${u.anio} 
+<button onclick="abrirFormularioEditarUsuario('${u.cedula}')">✏️ Editar</button>
+<button onclick="eliminarUsuario('${u.cedula}')">❌ Eliminar</button></p>`;
+        });
+}
+
+function actualizarResumenPagos(){
+    let pagos = JSON.parse(localStorage.getItem("pagos")) || [];
+    let total = pagos.reduce((sum, p) => sum + parseFloat(p.monto), 0);
+    document.getElementById("totalRecaudado").innerText = total.toFixed(2);
+}
+
+// Funciones para editar usuario
+function abrirFormularioEditarUsuario(cedula){
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let usuario = usuarios.find(u => u.cedula === cedula);
+    if(!usuario) return alert("Usuario no encontrado");
+
+    cedulaEditar = cedula;
+
+    document.getElementById("editarNombres").value = usuario.nombres;
+    document.getElementById("editarCedula").value = usuario.cedula;
+    document.getElementById("editarBarrio").value = usuario.barrio;
+    document.getElementById("editarCasa").value = usuario.casa;
+    document.getElementById("editarManzana").value = usuario.manzana;
+    document.getElementById("editarLote").value = usuario.lote;
+    document.getElementById("editarAnio").value = usuario.anio;
+
+    document.getElementById("formularioEditarUsuario").style.display = "block";
+}
+
+function cerrarFormularioEditarUsuario(){
+    document.getElementById("formularioEditarUsuario").style.display = "none";
+}
+
+function guardarEdicionUsuario(){
+    let nombres = document.getElementById("editarNombres").value;
+    let barrio = document.getElementById("editarBarrio").value;
+    let casa = document.getElementById("editarCasa").value;
+    let manzana = document.getElementById("editarManzana").value;
+    let lote = document.getElementById("editarLote").value;
+    let anio = document.getElementById("editarAnio").value;
+
+    if(!nombres || !barrio || !casa || !manzana || !lote || !anio){
+        return alert("Complete todos los campos");
+    }
+
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    let index = usuarios.findIndex(u => u.cedula === cedulaEditar);
+
+    if(index !== -1){
+        usuarios[index] = { nombres, cedula: cedulaEditar, barrio, casa, manzana, lote, anio };
+        localStorage.setItem("usuarios", JSON.stringify(usuarios));
+        alert("✅ Usuario actualizado correctamente");
+        cerrarFormularioEditarUsuario();
+        mostrarUsuarios();
+    }
+}
+</script>
+
+</body>
+</html>

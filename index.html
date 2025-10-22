@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Sistema de Cobro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <div class="logo">💧 Junta San Ramón</div>
+    <h1>💳 Sistema de Cobro - Panel Principal</h1>
+</header>
+
+<nav>
+    <a href="index.html">🚪 Cerrar sesión</a>
+</nav>
+
+<main>
+    <div class="card" onclick="abrirFormularioUsuario()">
+        <div class="icon">➕</div>
+        <h3>Crear Usuario</h3>
+        <p>Agregar un nuevo usuario al sistema.</p>
+    </div>
+
+    <div class="card" onclick="abrirFormularioPago()">
+        <div class="icon">💰</div>
+        <h3>Registrar Pago</h3>
+        <p>Accede al módulo para registrar pagos de usuarios.</p>
+    </div>
+
+    <div class="card" onclick="mostrarUsuarios()">
+        <div class="icon">📋</div>
+        <h3>Consultar Usuarios</h3>
+        <p>Ver la lista de usuarios registrados.</p>
+    </div>
+
+    <div class="card" onclick="mostrarPagos()">
+        <div class="icon">📊</div>
+        <h3>Consultar Pagos</h3>
+        <p>Ver los pagos registrados.</p>
+    </div>
+</main>
+
+<div style="padding:10px;">
+    <input type="text" id="buscarUsuario" placeholder="🔍 Buscar usuario por nombre o cédula" oninput="buscarUsuarios()">
+</div>
+
+<div id="resumenPagos" style="padding:10px;">
+    <h3>💵 Total recaudado: $<span id="totalRecaudado">0</span></h3>
+</div>
+
+<!-- Formulario Crear Usuario -->
+<div id="formularioUsuario" class="modal">
+    <h2>Crear Usuario</h2>
+    <input type="text" id="nombres" placeholder="Nombres y Apellidos">
+    <input type="text" id="cedula" placeholder="Cédula de Identidad">
+    <input type="text" id="barrio" placeholder="Barrio">
+    <input type="text" id="casa" placeholder="Nº de casa">
+    <input type="text" id="manzana" placeholder="Manzana">
+    <input type="text" id="lote" placeholder="Lote">
+    <input type="number" id="anio" placeholder="Año de ingreso">
+    <button onclick="guardarUsuario()">Guardar Usuario</button>
+    <button onclick="cerrarFormularioUsuario()">Cerrar</button>
+</div>
+
+<!-- Formulario Editar Usuario -->
+<div id="formularioEditarUsuario" class="modal">
+    <h2>Editar Usuario</h2>
+    <input type="text" id="editarNombres" placeholder="Nombres y Apellidos">
+    <input type="text" id="editarCedula" placeholder="Cédula de Identidad" disabled>
+    <input type="text" id="editarBarrio" placeholder="Barrio">
+    <input type="text" id="editarCasa" placeholder="Nº de casa">
+    <input type="text" id="editarManzana" placeholder="Manzana">
+    <input type="text" id="editarLote" placeholder="Lote">
+    <input type="number" id="editarAnio" placeholder="Año de ingreso">
+    <button onclick="guardarEdicionUsuario()">Guardar Cambios</button>
+    <button onclick="cerrarFormularioEditarUsuario()">Cerrar</button>
+</div>
+
+<!-- Formulario Registrar Pago -->
+<div id="formularioPago" class="modal">
+    <h2>Registrar Pago</h2>
+    <input type="text" id="pagoCedula" placeholder="Cédula de Usuario">
+    <input type="number" id="monto" placeholder="Monto">
+    <button onclick="guardarPago()">Guardar Pago</button>
+    <button onclick="cerrarFormularioPago()">Cerrar</button>
+</div>
+
+<!-- Lista Usuarios -->
+<div id="listaUsuarios" class="lista">
+    <h2>Lista de Usuarios</h2>
+    <div id="usuarios"></div>
+    <button onclick="cerrarListaUsuarios()">Cerrar</button>
+</div>
+
+<!-- Lista Pagos -->
+<div id="listaPagos" class="lista">
+    <h2>Lista de Pagos</h2>
+    <div id="pagos"></div>
+    <button onclick="cerrarListaPagos()">Cerrar</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
